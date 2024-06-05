@@ -4,25 +4,30 @@
 #include <stdexcept>
 #include <valarray>
 
-template <typename T> requires std::is_integral_v<T>
+template <typename T> requires std::is_arithmetic_v<T>
 class matrix
 {
 public:
-    matrix(size_t cols, size_t rows) : data(rows * cols), rows(rows), cols(cols) {}
-    matrix(size_t cols, size_t rows, std::initializer_list<T> list) : data(list), rows(rows), cols(cols) 
+    matrix(const size_t size_x, const size_t size_y) : data(size_y * size_x), size_y(size_y), size_x(size_x) {}
+    matrix(const size_t size_x, const size_t size_y, std::initializer_list<T> list) : data(list), size_y(size_y), size_x(size_x) 
     {
-        if(rows * cols != list.size()) [[unlikely]] std::runtime_error("Wrong matrix dimentions");
+        if(size_y * size_x != list.size()) [[unlikely]] std::runtime_error("Wrong matrix dimentions");
     }
 
-    std::valarray<T>& GetRow(size_t row) const { return data[std::slice(row * cols, cols, 1)]; }
-    std::valarray<T>& GetColumn(size_t col) const { return data[std::slice(col, rows, cols)]; }
+    std::valarray<T> GetRow(const size_t row) const { return data[std::slice(row * size_x, size_x, 1)]; }
+    std::valarray<T> GetColumn(const size_t col) const { return data[std::slice(col, size_y, size_x)]; }
 
-    std::slice_array<T>& GetColumn(size_t col) { return data[std::slice(col, rows, cols)]; }
-    std::slice_array<T>& GetRow(size_t row) { return data[std::slice(row * cols, cols, 1)]; }
+    std::slice_array<T> GetColumnSlice(const size_t col) { return data[std::slice(col, size_y, size_x)]; }
+    std::slice_array<T> GetRowSlice(const size_t row) { return data[std::slice(row * size_x, size_x, 1)]; }
 
+    T GetElement(const size_t x, const size_t y) const { return data[x + y * size_x]; }
+    T& GetElement(const size_t x, const size_t y) { return data[x + y * size_x]; }
+
+    size_t GetSizeY() const { return size_y; }
+    size_t GetSizeX() const { return size_x; }
 private:
     std::valarray<T> data;
-    size_t rows;
-    size_t cols;
+    size_t size_y;
+    size_t size_x;
 
 };
