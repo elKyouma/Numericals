@@ -1,6 +1,7 @@
 #pragma once
 
 #include <initializer_list>
+#include <ostream>
 #include <stdexcept>
 #include <valarray>
 
@@ -25,9 +26,29 @@ public:
 
     size_t GetSizeY() const { return size_y; }
     size_t GetSizeX() const { return size_x; }
+   
+    auto begin() { return data.begin(); }
+    auto end() { return data.end(); }
+    auto begin() const { return data.begin(); }
+    auto end() const { return data.end(); }
+
 private:
     std::valarray<T> data;
     size_t size_y;
     size_t size_x;
 
 };
+
+template <typename T> requires std::is_arithmetic_v<T>
+std::ostream& operator<< (std::ostream& stream, matrix<T> toPrint)
+{
+    for(size_t y = 0; y < toPrint.GetSizeY(); y++)
+    {
+        for(size_t x = 0; x < toPrint.GetSizeX(); x++)
+            stream << toPrint.GetElement(x, y) << '\t';
+        stream << '\n';
+    }
+
+    return stream;
+}
+

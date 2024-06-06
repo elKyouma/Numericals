@@ -1,4 +1,4 @@
-add_executable(numericals_tests numericals_tests.cpp vector_tests.cpp matrix_tests.cpp)
+add_executable(numericals_tests numericals_tests.cpp vector_tests.cpp matrix_tests.cpp utils_tests.cpp)
 target_include_directories(numericals_tests PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_link_libraries(numericals_tests
