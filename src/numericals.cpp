@@ -48,7 +48,8 @@ vector<real> solve_triangular_matrix_equation(const matrix<real>& a, const vecto
 vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, MatrixFlag flag)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
-
+    
+    permutation_stack stack;
     size_t size_y = a.GetSizeX(); 
     for(size_t y = 0; y < size_y; y++)
     {
@@ -57,6 +58,7 @@ vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, Matrix
                 size_t maxInd = find_index_of_column_max<real>(a.GetColumnSlice(y), y, size_y);               
                 if(maxInd == y) break;
                 swap_slices(a.GetRowSlice(y), a.GetRowSlice(maxInd));
+                std::swap(b[y], b[maxInd]);
                 break;
             //case FULL_SELECT:
             //    break;

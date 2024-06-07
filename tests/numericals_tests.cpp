@@ -1,6 +1,15 @@
 #include <gtest/gtest.h>
+#include <valarray>
 #include "numericals.h"
 #include "vector.h"
+
+
+template <typename T> requires std::is_arithmetic_v<T>
+void expect_valarray_equals(std::valarray<T> ar1, std::valarray<T> ar2)
+{
+    for(size_t i = 0; i < ar1.size(); i++)
+        EXPECT_EQ(ar1[i], ar2[i]);
+}
 
 TEST(Polynomials, Solve)
 {
@@ -34,9 +43,7 @@ TEST(MatrixEquationSolver, SolveTriangular)
     auto x = solve_triangular_matrix_equation(A, b);
 
     ASSERT_EQ(x.GetSize(), 3);
-    ASSERT_FLOAT_EQ(x[0], 1.0);
-    ASSERT_FLOAT_EQ(x[1], 2.0);
-    ASSERT_FLOAT_EQ(x[2], 3.0);
+    expect_valarray_equals<real>(x, std::valarray<real>{1.0, 2.0, 3.0});
 }
 
 TEST(MatrixEquationSolver, SolveGauss)
@@ -47,9 +54,7 @@ TEST(MatrixEquationSolver, SolveGauss)
     auto x = solve_matrix_equation_gauss(A, b, MatrixFlag::NORMAL);
 
     ASSERT_EQ(x.GetSize(), 3);
-    ASSERT_FLOAT_EQ(x[0], 2.0);
-    ASSERT_FLOAT_EQ(x[1], 0.0);
-    ASSERT_FLOAT_EQ(x[2], 4.0);
+    expect_valarray_equals<real>(x, std::valarray<real>{2.0, 0.0, 4.0});
 }
 
 TEST(MatrixEquationSolver, SolveJordan)
@@ -60,9 +65,7 @@ TEST(MatrixEquationSolver, SolveJordan)
     auto x = solve_matrix_equation_jordan(A, b, MatrixFlag::NORMAL);
 
     ASSERT_EQ(x.GetSize(), 3);
-    ASSERT_FLOAT_EQ(x[0], 2.0);
-    ASSERT_FLOAT_EQ(x[1], 0.0);
-    ASSERT_FLOAT_EQ(x[2], 4.0);
+    expect_valarray_equals<real>(x, std::valarray<real>{2.0, 0.0, 4.0});
 }
 
 TEST(MatrixEquationSolver, PartialSelection)
@@ -73,7 +76,8 @@ TEST(MatrixEquationSolver, PartialSelection)
     
     vector<real> b {1.0, 2.0, 3.0};
     vector<real> solution {1.0, 0.0, 0.0};
-
-    solve_matrix_equation_gauss(A, b, MatrixFlag::PARTIAL_SELECT);
+    auto x = solve_matrix_equation_gauss(A, b, MatrixFlag::PARTIAL_SELECT);
+    
+    expect_valarray_equals<real>(x, solution);
 }
 

@@ -14,7 +14,8 @@ public:
 
     T& operator[](const size_t index) { return data[index]; }
     T operator[](const size_t index) const { return data[index]; }
- 
+    
+    operator std::valarray<T> () const {return data;}
 private:
     std::valarray<T> data;
 };
