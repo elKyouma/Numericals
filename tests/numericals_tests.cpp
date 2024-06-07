@@ -42,15 +42,28 @@ TEST(Polynomials, SolveHorner)
     ASSERT_FLOAT_EQ(result, 16.0);
 }
 
-TEST(MatrixEquationSolver, SolveTriangular)
+TEST(MatrixEquationSolver, SolveHighTriangular)
 {
     matrix<real> A{3, 3, {1.0, 2.0, 3.0, 0.0, 5.0, 6.0, 0.0, 0.0, 9.0}};
     vector<real> b{14.0, 28.0, 27.0};
 
-    auto x = solve_triangular_matrix_equation(A, b);
+    auto x = solve_high_trian_matrix_equation(A, b);
 
     ASSERT_EQ(x.GetSize(), 3);
     expect_valarray_equals<real>(x, std::valarray<real>{1.0, 2.0, 3.0});
+}
+
+TEST(MatrixEquationSolver, SolveLowTriangular)
+{
+    matrix<real> A{3, 3, {  1.0, 0.0, 0.0, 
+                            2.0, 3.0, 0.0, 
+                            4.0, 5.0, 6.0}};
+    vector<real> b{1.0, 2.0, 10.0};
+
+    auto x = solve_low_trian_matrix_equation(A, b);
+
+    ASSERT_EQ(x.GetSize(), 3);
+    expect_valarray_equals<real>(x, std::valarray<real>{1.0, 0.0, 1.0});
 }
 
 TEST(MatrixEquationSolver, SolveGauss)

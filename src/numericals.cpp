@@ -26,7 +26,7 @@ real solve_polynomial_horner(std::span<real> coefficients, const real x)
     return result;
 }
 
-vector<real> solve_triangular_matrix_equation(const matrix<real>& a, const vector<real>& b)
+vector<real> solve_high_trian_matrix_equation(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalZeros)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
 
@@ -38,12 +38,29 @@ vector<real> solve_triangular_matrix_equation(const matrix<real>& a, const vecto
         x[index] = b[index];
         for(size_t j = 1; j <= i; j++)
             x[index] -= a.GetElement(index + j, index) * x[index + j]; 
-        x[index] /= a.GetElement(index, index);
+        if(!assumeDiagonalZeros)
+            x[index] /= a.GetElement(index, index);
     }
     
     return x;
 }
 
+vector<real> solve_low_trian_matrix_equation(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalZeros)
+{
+    if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
+
+    vector<real> x(a.GetSizeX());
+    for(size_t i = 0; i < x.GetSize(); i++)
+    {    
+        x[i] = b[i];
+        for(size_t j = 1; j <= i; j++)
+            x[i] -= a.GetElement(i - j, i) * x[i - j]; 
+        if(!assumeDiagonalZeros)
+            x[i] /= a.GetElement(i, i);
+    }
+    
+    return x;
+}
 
 vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, MatrixFlag flag)
 {
@@ -87,7 +104,7 @@ vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, Matrix
         }    
     }
     
-    auto x = solve_triangular_matrix_equation(a, b);
+    auto x = solve_high_trian_matrix_equation(a, b);
     while(!stack.empty())
     {
         std::swap(x[stack.top().first], x[stack.top().second]);
@@ -160,8 +177,8 @@ matrix<real> lu_decomposition(matrix<real> a)
     
     for(size_t j = 0; j < size; j++)
     {    
-        for(size_t i = j + 1; i < size; i++)
-        {    
+        for(size_t i = j+1; i < size; i++)
+        {
             const real multiplier = a.GetElement(j, i) / a.GetElement(j, j); 
             a.GetRowSlice(i, j) -= multiplier * a.GetRow(j, j);
             a.GetElement(j, i) = multiplier;
@@ -169,3 +186,9 @@ matrix<real> lu_decomposition(matrix<real> a)
     }
     return a;
 }
+
+matrix<real> ldl_decomposition(matrix<real> a)
+{
+    return a;
+}
+

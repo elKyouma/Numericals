@@ -17,22 +17,22 @@ public:
 
     std::valarray<T> GetRow(const size_t row, const size_t offset = 0) const        
     { 
-        return data[std::slice((row + offset) * size_x, size_x - offset, 1)]; 
+        return data[std::slice(row * size_x + offset, size_x - offset, 1)]; 
     }
 
     std::valarray<T> GetColumn(const size_t col, const size_t offset = 0) const     
     { 
-        return data[std::slice(col + offset, size_y - offset, size_x)]; 
+        return data[std::slice(col + offset * size_x, size_y - offset, size_x)]; 
     }
 
     std::slice_array<T> GetColumnSlice(const size_t col, const size_t offset = 0)   
     { 
-        return data[std::slice(col + offset, size_y - offset, size_x)]; 
+        return data[std::slice(col + offset * size_x, size_y - offset, size_x)]; 
     }
 
     std::slice_array<T> GetRowSlice(const size_t row, const size_t offset = 0)      
     { 
-        return data[std::slice((row + offset) * size_x, size_x - offset, 1)]; 
+        return data[std::slice(row * size_x + offset, size_x - offset, 1)]; 
     }
 
     T GetElement(const size_t x, const size_t y) const { return data[x + y * size_x]; }
