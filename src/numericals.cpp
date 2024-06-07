@@ -151,3 +151,21 @@ vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, Matri
     return b;
 }
 
+
+matrix<real> lu_decomposition(matrix<real> a)
+{
+
+    if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
+    size_t size = a.GetSizeX();
+    
+    for(size_t j = 0; j < size; j++)
+    {    
+        for(size_t i = j + 1; i < size; i++)
+        {    
+            const real multiplier = a.GetElement(j, i) / a.GetElement(j, j); 
+            a.GetRowSlice(i, j) -= multiplier * a.GetRow(j, j);
+            a.GetElement(j, i) = multiplier;
+        }
+    }
+    return a;
+}

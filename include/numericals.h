@@ -28,3 +28,5 @@ void revertPermutations(matrix<real>& a, vector<real>& b, permutation_stack& per
 vector<real> solve_triangular_matrix_equation(const matrix<real>& a, const vector<real>& b);
 vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
 vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
+
+matrix<real> lu_decomposition(matrix<real> a);

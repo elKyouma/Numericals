@@ -11,6 +11,13 @@ void expect_valarray_equals(std::valarray<T> ar1, std::valarray<T> ar2)
         EXPECT_NEAR(ar1[i], ar2[i], 10e-7);
 }
 
+template <typename T> requires std::is_arithmetic_v<T>
+void expect_matrix_equals(matrix<T> a1, matrix<T> a2)
+{
+    for(size_t i = 0; i < a1.GetSizeY() * a1.GetSizeX(); i++)
+        EXPECT_NEAR(a1.GetElement(i), a2.GetElement(i), 10e-7);
+}
+
 TEST(Polynomials, Solve)
 {
     //x^2 + 2x + 1
@@ -97,3 +104,17 @@ TEST(MatrixEquationSolver, FullSelection)
     expect_valarray_equals<real>(x1, solution);
     expect_valarray_equals<real>(x2, solution);
 }
+
+TEST(MatrixEquationSolver, LU_Decomposition)
+{
+    matrix<real> A{3, 3, {  1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0 }};
+    matrix<real> expected_lu{3, 3, {1.0, 2.0, 3.0,
+                                    4.0, -3.0, -6.0,
+                                    7.0, 2.0, 0.0 }};
+    A = lu_decomposition(A);
+
+    expect_matrix_equals(A, expected_lu); 
+}
+
