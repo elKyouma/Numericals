@@ -41,8 +41,9 @@ TEST(Utils, FindIndexOfMaxElementInTheMatrix)
                             2.0, 1.0, 4.0,
                             3.0, 0.0, 1.0}};
     
-    EXPECT_EQ(5, find_index_of_matrix_max(A));
-    EXPECT_EQ(4.0, A.GetElement(find_index_of_matrix_max(A)));
+    EXPECT_EQ(2, find_index_of_matrix_max(A).first);
+    EXPECT_EQ(1, find_index_of_matrix_max(A).second);
+    EXPECT_FLOAT_EQ(4.0, A.GetElement(find_index_of_matrix_max(A).first, find_index_of_matrix_max(A).second));
 }
 
 TEST(Utils, FindIndexOfMaxElementInTheValarray)

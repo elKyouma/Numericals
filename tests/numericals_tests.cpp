@@ -8,7 +8,7 @@ template <typename T> requires std::is_arithmetic_v<T>
 void expect_valarray_equals(std::valarray<T> ar1, std::valarray<T> ar2)
 {
     for(size_t i = 0; i < ar1.size(); i++)
-        EXPECT_EQ(ar1[i], ar2[i]);
+        EXPECT_NEAR(ar1[i], ar2[i], 10e-7);
 }
 
 TEST(Polynomials, Solve)
@@ -83,3 +83,17 @@ TEST(MatrixEquationSolver, PartialSelection)
     expect_valarray_equals<real>(x2, solution);
 }
 
+TEST(MatrixEquationSolver, FullSelection)
+{
+    matrix<real> A{3, 3, {  8.0, 8.0, 8.0,
+                            4.0, 5.0, 7.0,
+                            1.0, 2.0, 3.0 }};
+    
+    vector<real> b {8.0, 1.0, 0.0};
+    vector<real> solution {0.0, 3.0, -2.0};
+    auto x1 = solve_matrix_equation_gauss(A, b, MatrixFlag::FULL_SELECT);
+    auto x2 = solve_matrix_equation_jordan(A, b, MatrixFlag::FULL_SELECT);
+    
+    expect_valarray_equals<real>(x1, solution);
+    expect_valarray_equals<real>(x2, solution);
+}

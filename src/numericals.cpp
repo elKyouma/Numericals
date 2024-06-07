@@ -51,68 +51,103 @@ vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, Matrix
     
     permutation_stack stack;
     size_t size_y = a.GetSizeX(); 
-    for(size_t y = 0; y < size_y; y++)
+    for(size_t d = 0; d < size_y; d++)
     {
         switch (flag) {
             case PARTIAL_SELECT:
                 {
-                    size_t maxInd = find_index_of_valarray_max<real>(a.GetColumnSlice(y), y, size_y);               
-                    if(maxInd == y) break;
-                    swap_slices(a.GetRowSlice(y), a.GetRowSlice(maxInd));
-                    std::swap(b[y], b[maxInd]);
+                    size_t maxInd = find_index_of_valarray_max<real>(a.GetColumnSlice(d), d, size_y);               
+                    if(maxInd == d) break;
+                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxInd));
+                    std::swap(b[d], b[maxInd]);
                 }
                 break;
             case FULL_SELECT:
+                {
+                    auto [maxIndx, maxIndy] = find_index_of_matrix_max(a, d, d);
+                    
+                    if(maxIndy == d && maxIndx == d) break;
+                    
+                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxIndy));
+                    std::swap(b[d], b[maxIndy]);
+                    swap_slices(a.GetColumnSlice(d), a.GetColumnSlice(maxIndx));
+                    stack.push({d, maxIndx});
+                }
                 break;
             case NORMAL:
                 break;
         }
 
-        b[y] /= a.GetElement(y, y);
-        a.GetRowSlice(y) = a.GetRow(y) / a.GetElement(y, y);
-        for (size_t i = y + 1; i < size_y; i++)
+        b[d] /= a.GetElement(d, d);
+        a.GetRowSlice(d) = a.GetRow(d) / a.GetElement(d, d);
+        for (size_t i = d + 1; i < size_y; i++)
         {   
-            b[i] -= b[y] * a.GetElement(y, i);
-            a.GetRowSlice(i) -= a.GetElement(y, i) * a.GetRow(y);
-        }
+            b[i] -= b[d] * a.GetElement(d, i);
+            a.GetRowSlice(i) -= a.GetElement(d, i) * a.GetRow(d);
+        }    
     }
-
-    return solve_triangular_matrix_equation(a, b);
+    
+    auto x = solve_triangular_matrix_equation(a, b);
+    while(!stack.empty())
+    {
+        std::swap(x[stack.top().first], x[stack.top().second]);
+        stack.pop();
+    }
+    
+    return x;
 }
 
 vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, MatrixFlag flag)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
 
+    permutation_stack stack;
+    
     size_t size_y = a.GetSizeX(); 
-    for(size_t y = 0; y < size_y; y++)
+    for(size_t d = 0; d < size_y; d++)
     {
          switch (flag) {
             case PARTIAL_SELECT:
                 {
-                    size_t maxInd = find_index_of_valarray_max<real>(a.GetColumnSlice(y), y, size_y);               
-                    if(maxInd == y) break;
-                    swap_slices(a.GetRowSlice(y), a.GetRowSlice(maxInd));
-                    std::swap(b[y], b[maxInd]);
+                    size_t maxInd = find_index_of_valarray_max<real>(a.GetColumnSlice(d), d, size_y);               
+                    if(maxInd == d) break;
+                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxInd));
+                    std::swap(b[d], b[maxInd]);
                 }
                 break;
             case FULL_SELECT:
+                {
+                    auto [maxIndx, maxIndy] = find_index_of_matrix_max(a, d, d);
+                    
+                    if(maxIndy == d && maxIndx == d) break;
+                    
+                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxIndy));
+                    std::swap(b[d], b[maxIndy]);
+                    swap_slices(a.GetColumnSlice(d), a.GetColumnSlice(maxIndx));
+                    stack.push({d, maxIndx});
+                }
                 break;
             case NORMAL:
                 break; 
         }
 
-       b[y] /= a.GetElement(y, y);
-        a.GetRowSlice(y) = a.GetRow(y) / a.GetElement(y, y);
+       b[d] /= a.GetElement(d, d);
+        a.GetRowSlice(d) = a.GetRow(d) / a.GetElement(d, d);
         for (size_t i = 0; i < size_y; i++)
         {   
-            if(i == y) continue;
+            if(i == d) continue;
 
-            b[i] -= b[y] * a.GetElement(y, i);
-            a.GetRowSlice(i) -= a.GetElement(y, i) * a.GetRow(y);
+            b[i] -= b[d] * a.GetElement(d, i);
+            a.GetRowSlice(i) -= a.GetElement(d, i) * a.GetRow(d);
         }
     }
 
+    while(!stack.empty())
+    {
+        std::swap(b[stack.top().first], b[stack.top().second]);
+        stack.pop();
+    }
+    
     return b;
 }
 

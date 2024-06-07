@@ -1,4 +1,5 @@
 #pragma once
+#include <utility>
 #include <valarray>
 #include <matrix.h>
 
@@ -18,19 +19,25 @@ size_t find_index_of_valarray_max(const std::valarray<T>& vals, size_t start, si
 }
 
 template <typename T> requires std::is_arithmetic_v<T>
-size_t find_index_of_matrix_max(const matrix<T>& mat)
+std::pair<size_t, size_t> find_index_of_matrix_max(const matrix<T>& mat, const size_t startX = 0, const size_t startY = 0,
+                                                   size_t endX = 0, size_t endY = 0)
 {
-    T max = mat.GetElement(0);
-    size_t ind = 0;
-    size_t size = mat.GetSizeX() * mat.GetSizeY();
-    for(size_t i = 1; i < size; i++)
-        if(mat.GetElement(i) > max)
-        {
-            ind = i;
-            max = mat.GetElement(i);
-        }
+    if(endX == 0) endX = mat.GetSizeX();
+    if(endY == 0) endY = mat.GetSizeY();
 
-    return ind;
+    T max = mat.GetElement(0);
+    size_t indX = startX;
+    size_t indY = startY;
+    for(size_t y = startY; y < endY; y++)
+        for(size_t x = startX; x < endX; x++)
+            if(mat.GetElement(x, y) > max)
+            {
+                indX = x;
+                indY = y;
+                max = mat.GetElement(x, y);
+            }
+
+    return {indX, indY};
 }
 
 template <typename T> requires std::is_arithmetic_v<T>
