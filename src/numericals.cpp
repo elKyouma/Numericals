@@ -26,7 +26,7 @@ real solve_polynomial_horner(std::span<real> coefficients, const real x)
     return result;
 }
 
-vector<real> solve_high_trian_matrix_equation(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalZeros)
+vector<real> solve_high_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
 
@@ -38,14 +38,14 @@ vector<real> solve_high_trian_matrix_equation(const matrix<real>& a, const vecto
         x[index] = b[index];
         for(size_t j = 1; j <= i; j++)
             x[index] -= a.GetElement(index + j, index) * x[index + j]; 
-        if(!assumeDiagonalZeros)
+        if(!assumeDiagonalOnes)
             x[index] /= a.GetElement(index, index);
     }
     
     return x;
 }
 
-vector<real> solve_low_trian_matrix_equation(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalZeros)
+vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
 
@@ -55,14 +55,14 @@ vector<real> solve_low_trian_matrix_equation(const matrix<real>& a, const vector
         x[i] = b[i];
         for(size_t j = 1; j <= i; j++)
             x[i] -= a.GetElement(i - j, i) * x[i - j]; 
-        if(!assumeDiagonalZeros)
+        if(!assumeDiagonalOnes)
             x[i] /= a.GetElement(i, i);
     }
     
     return x;
 }
 
-vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, MatrixFlag flag)
+vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, MatrixFlag flag)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
     
@@ -104,7 +104,7 @@ vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, Matrix
         }    
     }
     
-    auto x = solve_high_trian_matrix_equation(a, b);
+    auto x = solve_high_trian_matrix_eq(a, b);
     while(!stack.empty())
     {
         std::swap(x[stack.top().first], x[stack.top().second]);
@@ -114,7 +114,7 @@ vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, Matrix
     return x;
 }
 
-vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, MatrixFlag flag)
+vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, MatrixFlag flag)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
 
@@ -169,7 +169,7 @@ vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, Matri
 }
 
 
-matrix<real> lu_decomposition(matrix<real> a)
+matrix<real> lu_decomposition(matrix<real> a, MatrixFlag flag)
 {
 
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
@@ -187,7 +187,15 @@ matrix<real> lu_decomposition(matrix<real> a)
     return a;
 }
 
-matrix<real> ldl_decomposition(matrix<real> a)
+vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, MatrixFlag flag)
+{
+    constexpr bool assume_diagonal_ones = true;
+    matrix<real> lu = lu_decomposition(a, flag);
+    vector<real> y = solve_low_trian_matrix_eq(a, b, assume_diagonal_ones);
+    return solve_high_trian_matrix_eq(a, std::move(y));
+}
+
+matrix<real> ldl_decomposition(matrix<real> a, MatrixFlag flag)
 {
     return a;
 }

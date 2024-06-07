@@ -22,10 +22,11 @@ enum MatrixFlag
 real solve_polynomial(std::span<real>,const real);
 real solve_polynomial_horner(std::span<real>,const real);
 
-vector<real> solve_high_trian_matrix_equation(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalZeros = false);
-vector<real> solve_low_trian_matrix_equation(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalZeros = false);
-vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
-vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
+vector<real> solve_high_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes = false);
+vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes = false);
+vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
+vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
+vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, MatrixFlag flag = NORMAL);
 
-matrix<real> lu_decomposition(matrix<real> a);
-matrix<real> ldl_decomposition(matrix<real> a);
+matrix<real> lu_decomposition(matrix<real> a, MatrixFlag flag = NORMAL);
+matrix<real> ldl_decomposition(matrix<real> a, MatrixFlag flag = NORMAL);
