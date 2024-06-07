@@ -23,6 +23,9 @@ public:
 
     T GetElement(const size_t x, const size_t y) const { return data[x + y * size_x]; }
     T& GetElement(const size_t x, const size_t y) { return data[x + y * size_x]; }
+    T GetElement(const size_t i) const { return data[i]; }
+    T& GetElement(const size_t i) { return data[i]; }
+
 
     size_t GetSizeY() const { return size_y; }
     size_t GetSizeX() const { return size_x; }
