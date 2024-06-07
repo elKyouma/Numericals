@@ -78,14 +78,27 @@ vector<real> solve_matrix_equation_gauss( matrix<real> a, vector<real> b, Matrix
     return solve_triangular_matrix_equation(a, b);
 }
 
-vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, [[maybe_unused]] MatrixFlag flag)
+vector<real> solve_matrix_equation_jordan( matrix<real> a, vector<real> b, MatrixFlag flag)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
 
     size_t size_y = a.GetSizeX(); 
     for(size_t y = 0; y < size_y; y++)
     {
-        b[y] /= a.GetElement(y, y);
+         switch (flag) {
+            case PARTIAL_SELECT:
+                size_t maxInd = find_index_of_column_max<real>(a.GetColumnSlice(y), y, size_y);               
+                if(maxInd == y) break;
+                swap_slices(a.GetRowSlice(y), a.GetRowSlice(maxInd));
+                std::swap(b[y], b[maxInd]);
+                break;
+            //case FULL_SELECT:
+            //    break;
+            //case NORMAL:
+            //    break;
+        }
+
+       b[y] /= a.GetElement(y, y);
         a.GetRowSlice(y) = a.GetRow(y) / a.GetElement(y, y);
         for (size_t i = 0; i < size_y; i++)
         {   

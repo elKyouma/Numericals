@@ -76,8 +76,10 @@ TEST(MatrixEquationSolver, PartialSelection)
     
     vector<real> b {1.0, 2.0, 3.0};
     vector<real> solution {1.0, 0.0, 0.0};
-    auto x = solve_matrix_equation_gauss(A, b, MatrixFlag::PARTIAL_SELECT);
+    auto x1 = solve_matrix_equation_gauss(A, b, MatrixFlag::PARTIAL_SELECT);
+    auto x2 = solve_matrix_equation_jordan(A, b, MatrixFlag::PARTIAL_SELECT);
     
-    expect_valarray_equals<real>(x, solution);
+    expect_valarray_equals<real>(x1, solution);
+    expect_valarray_equals<real>(x2, solution);
 }
 
