@@ -4,10 +4,8 @@
 
 #include <cmath>
 #include <cstddef>
-#include <iterator>
 #include <ranges>
 #include <stdexcept>
-#include <vector>
 
 real solve_polynomial(std::span<real> coefficients, const real x)
 {
@@ -248,6 +246,26 @@ matrix<real> ldl_decomposition(const matrix<real>& a, MatrixFlag flag)
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldl decomposition");
  
     size_t size = a.GetSizeX();
-    for(size_t i = 0; i < size; i++);
-    return a;
+    matrix<real> result{size, size};
+    for(size_t i = 0; i < size; i++)
+    {    
+        auto& d = result.GetElement(i, i); 
+        d = a.GetElement(i, i);
+        for(size_t k = 0; k < i - 1; k++)
+            d -= pow(result.GetElement(k, i), 2);
+        d = sqrt(d);
+        
+        for(size_t j = 0; j < i - 1; j++)
+        {    
+            result.GetElement(j , i) = a.GetElement(j, i);
+            for(size_t k = 0; k < i - 1; k++)
+                result.GetElement(j, i) -= result.GetElement(j, k) * result.GetElement(i, k);
+        }
+    }
+
+    for(size_t i = 0; i < size; i++)
+        for(size_t j = i + 1; j < size; j++)
+            result.GetElement(j, i) = result.GetElement(i, j);
+
+    return result;
 }

@@ -1,4 +1,6 @@
-add_executable(numericals_tests numericals_tests.cpp vector_tests.cpp matrix_tests.cpp utils_tests.cpp)
+file(GLOB SOURCES "*.cpp")
+
+add_executable(numericals_tests ${SOURCES})
 target_include_directories(numericals_tests PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 target_link_libraries(numericals_tests

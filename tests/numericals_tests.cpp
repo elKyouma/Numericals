@@ -144,6 +144,19 @@ TEST(MatrixEquationSolver, LDLT_Decomposition)
     expect_matrix_equals(A, expected_lu); 
 }
 
+TEST(MatrixEquationSolver, LDL_Decomposition)
+{
+    matrix<real> A{3, 3, {  1.0, 0.0, 3.0,
+                            0.0, 6.0, 6.0,
+                            3.0, 6.0, 5.0 }};
+    matrix<real> expected_lu{3, 3, {1.0, 0.0, 3.0,
+                                    0.0, 6.0, 1.0,
+                                    3.0, 1.0, -10.0 }};
+    A = ldlt_decomposition(A);
+
+    expect_matrix_equals(A, expected_lu); 
+}
+
 TEST(MatrixEquationSolver, SolveLU_Matrix)
 {
     matrix<real> A{3, 3, {  1.0, 0.0, 3.0,
@@ -166,4 +179,8 @@ TEST(MatrixEquationSolver, SolveLDLT_Matrix)
     vector<real> x = solve_matrix_eq_with_ldlt_decomposition(A, b);
     vector<real> expected{4.0, 1.0, -1.0};
     expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
+}
+
+TEST(MatrixEquationSolver, SolveLDL_Matrix)
+{
 }
