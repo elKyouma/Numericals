@@ -1,12 +1,14 @@
 #include "MatrixSolver.h"
+#include "PivotingStrategy.h"
 #include "vector.h"
-#include "utils.h"
 #include "MatrixDecomposer.h"
 
 #include <cmath>
 #include <cstddef>
 #include <ranges>
 #include <stdexcept>
+
+namespace numericals{
 
 real solve_polynomial(std::span<real> coefficients, const real x)
 {
@@ -61,7 +63,7 @@ vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>
     return x;
 }
 
-vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, MatrixFlag flag)
+vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, PivotingStrategy&& strategy)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
     
@@ -69,31 +71,7 @@ vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, MatrixFlag f
     size_t size_y = a.GetSizeX(); 
     for(size_t d = 0; d < size_y; d++)
     {
-        switch (flag) {
-            case PARTIAL_SELECT:
-                {
-                    size_t maxInd = find_index_of_valarray_max<real>(a.GetColumnSlice(d), d, size_y);               
-                    if(maxInd == d) break;
-                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxInd));
-                    std::swap(b[d], b[maxInd]);
-                }
-                break;
-            case FULL_SELECT:
-                {
-                    auto [maxIndx, maxIndy] = find_index_of_matrix_max(a, d, d);
-                    
-                    if(maxIndy == d && maxIndx == d) break;
-                    
-                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxIndy));
-                    std::swap(b[d], b[maxIndy]);
-                    swap_slices(a.GetColumnSlice(d), a.GetColumnSlice(maxIndx));
-                    stack.push({d, maxIndx});
-                }
-                break;
-            case NORMAL:
-                break;
-        }
-
+        strategy.PreIteration(a, b, d);
         b[d] /= a.GetElement(d, d);
         a.GetRowSlice(d) = a.GetRow(d) / a.GetElement(d, d);
         for (size_t i = d + 1; i < size_y; i++)
@@ -102,52 +80,21 @@ vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, MatrixFlag f
             a.GetRowSlice(i) -= a.GetElement(d, i) * a.GetRow(d);
         }    
     }
-    
+
     auto x = solve_high_trian_matrix_eq(a, b);
-    while(!stack.empty())
-    {
-        std::swap(x[stack.top().first], x[stack.top().second]);
-        stack.pop();
-    }
-    
+    strategy.CleanUp(x); 
     return x;
 }
 
-vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, MatrixFlag flag)
+vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, PivotingStrategy&& strategy)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
-
-    permutation_stack stack;
     
     size_t size_y = a.GetSizeX(); 
     for(size_t d = 0; d < size_y; d++)
     {
-         switch (flag) {
-            case PARTIAL_SELECT:
-                {
-                    size_t maxInd = find_index_of_valarray_max<real>(a.GetColumnSlice(d), d, size_y);               
-                    if(maxInd == d) break;
-                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxInd));
-                    std::swap(b[d], b[maxInd]);
-                }
-                break;
-            case FULL_SELECT:
-                {
-                    auto [maxIndx, maxIndy] = find_index_of_matrix_max(a, d, d);
-                    
-                    if(maxIndy == d && maxIndx == d) break;
-                    
-                    swap_slices(a.GetRowSlice(d), a.GetRowSlice(maxIndy));
-                    std::swap(b[d], b[maxIndy]);
-                    swap_slices(a.GetColumnSlice(d), a.GetColumnSlice(maxIndx));
-                    stack.push({d, maxIndx});
-                }
-                break;
-            case NORMAL:
-                break; 
-        }
-
-       b[d] /= a.GetElement(d, d);
+        strategy.PreIteration(a, b, d);
+        b[d] /= a.GetElement(d, d);
         a.GetRowSlice(d) = a.GetRow(d) / a.GetElement(d, d);
         for (size_t i = 0; i < size_y; i++)
         {   
@@ -157,28 +104,24 @@ vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, MatrixFlag 
             a.GetRowSlice(i) -= a.GetElement(d, i) * a.GetRow(d);
         }
     }
-
-    while(!stack.empty())
-    {
-        std::swap(b[stack.top().first], b[stack.top().second]);
-        stack.pop();
-    }
+    
+    strategy.CleanUp(b);
     
     return b;
 }
 
-vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, MatrixFlag flag)
+vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, PivotingStrategy&& strategy)
 {
     constexpr bool assume_diagonal_ones = true;
-    matrix<real> lu = lu_decomposition(a, flag);
+    matrix<real> lu = lu_decomposition(a, std::move(strategy));
     vector<real> y = solve_low_trian_matrix_eq(lu, b, assume_diagonal_ones);
     return solve_high_trian_matrix_eq(lu, std::move(y));
 }
 
-vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, const vector<real>& b, MatrixFlag flag)
+vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, const vector<real>& b, PivotingStrategy&& strategy)
 {
     constexpr bool assume_diagonal_ones = true;
-    matrix<real> ldlt = ldlt_decomposition(a);
+    matrix<real> ldlt = ldlt_decomposition(a, std::move(strategy));
     vector<real> z = solve_low_trian_matrix_eq(ldlt, b, assume_diagonal_ones);
     size_t size = z.GetSize();
     vector<real> y = vector<real>(size);
@@ -187,4 +130,5 @@ vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, cons
         y[i] = z[i] / ldlt.GetElement(i, i);
     
     return solve_high_trian_matrix_eq(ldlt, y, assume_diagonal_ones);
+}
 }

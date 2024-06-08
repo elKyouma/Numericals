@@ -1,8 +1,11 @@
 #include <gtest/gtest.h>
 #include <valarray>
 #include "MatrixSolver.h"
+#include "PivotingStrategy.h"
 #include "vector.h"
 #include "MatrixDecomposer.h"
+
+using namespace numericals;
 
 template <typename T> requires std::is_arithmetic_v<T>
 void expect_valarray_equals(std::valarray<T> ar1, std::valarray<T> ar2)
@@ -71,7 +74,7 @@ TEST(MatrixEquationSolver, SolveGauss)
     matrix<real> A{3, 3, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 9.0, 8.0, 8.0}};
     vector<real> b{14.0, 32.0, 50.0};
 
-    auto x = solve_matrix_eq_gauss(A, b, MatrixFlag::NORMAL);
+    auto x = solve_matrix_eq_gauss(A, b);
 
     ASSERT_EQ(x.GetSize(), 3);
     expect_valarray_equals<real>(x, std::valarray<real>{2.0, 0.0, 4.0});
@@ -82,7 +85,7 @@ TEST(MatrixEquationSolver, SolveJordan)
     matrix<real> A{3, 3, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 9.0, 8.0, 8.0}};
     vector<real> b{14.0, 32.0, 50.0};
 
-    auto x = solve_matrix_eq_jordan(A, b, MatrixFlag::NORMAL);
+    auto x = solve_matrix_eq_jordan(A, b);
 
     ASSERT_EQ(x.GetSize(), 3);
     expect_valarray_equals<real>(x, std::valarray<real>{2.0, 0.0, 4.0});
@@ -96,8 +99,8 @@ TEST(MatrixEquationSolver, PartialSelection)
     
     vector<real> b {1.0, 2.0, 3.0};
     vector<real> solution {1.0, 0.0, 0.0};
-    auto x1 = solve_matrix_eq_gauss(A, b, MatrixFlag::PARTIAL_SELECT);
-    auto x2 = solve_matrix_eq_jordan(A, b, MatrixFlag::PARTIAL_SELECT);
+    auto x1 = solve_matrix_eq_gauss(A, b, PartialPivotingStragegy());
+    auto x2 = solve_matrix_eq_jordan(A, b, PartialPivotingStragegy());
     
     expect_valarray_equals<real>(x1, solution);
     expect_valarray_equals<real>(x2, solution);
@@ -111,8 +114,8 @@ TEST(MatrixEquationSolver, FullSelection)
     
     vector<real> b {8.0, 1.0, 0.0};
     vector<real> solution {0.0, 3.0, -2.0};
-    auto x1 = solve_matrix_eq_gauss(A, b, MatrixFlag::FULL_SELECT);
-    auto x2 = solve_matrix_eq_jordan(A, b, MatrixFlag::FULL_SELECT);
+    auto x1 = solve_matrix_eq_gauss(A, b, FullPivotingStragegy());
+    auto x2 = solve_matrix_eq_jordan(A, b, FullPivotingStragegy());
     
     expect_valarray_equals<real>(x1, solution);
     expect_valarray_equals<real>(x2, solution);

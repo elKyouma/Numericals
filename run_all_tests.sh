@@ -1,5 +1,5 @@
 #!/bin/bash
 cmake -B build
-ninja -D build
+ninja -C build
 ./build/tests/bin/numericals_tests
 

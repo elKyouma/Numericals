@@ -1,6 +1,10 @@
 #include "MatrixDecomposer.h"
+#include "PivotingStrategy.h"
 
-matrix<real> ldl_decomposition(const matrix<real>& a, MatrixFlag flag) 
+namespace numericals
+{
+
+matrix<real> ldl_decomposition(const matrix<real>& a, PivotingStrategy&& strategy) 
 {
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldl decomposition");
  
@@ -29,7 +33,7 @@ matrix<real> ldl_decomposition(const matrix<real>& a, MatrixFlag flag)
     return result;
 }
 
-matrix<real> ldlt_decomposition(const matrix<real>& a, [[maybe_unused]] MatrixFlag flag)
+matrix<real> ldlt_decomposition(const matrix<real>& a, PivotingStrategy&& strategy)
 {
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldlt decomposition");
     
@@ -62,7 +66,7 @@ matrix<real> ldlt_decomposition(const matrix<real>& a, [[maybe_unused]] MatrixFl
     return result;
 }
 
-matrix<real> lu_decomposition(matrix<real> a, [[maybe_unused]]MatrixFlag flag)
+matrix<real> lu_decomposition(matrix<real> a, PivotingStrategy&& strategy)
 {
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
     size_t size = a.GetSizeX();
@@ -77,4 +81,6 @@ matrix<real> lu_decomposition(matrix<real> a, [[maybe_unused]]MatrixFlag flag)
         }
     }
     return a;
+}
+
 }

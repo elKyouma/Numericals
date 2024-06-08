@@ -35,6 +35,16 @@ public:
         return data[std::slice(row * size_x + offset, size_x - offset, 1)]; 
     }
 
+    const std::slice_array<T> GetColumnSlice(const size_t col, const size_t offset = 0) const  
+    { 
+        return data[std::slice(col + offset * size_x, size_y - offset, size_x)]; 
+    }
+
+    const std::slice_array<T> GetRowSlice(const size_t row, const size_t offset = 0) const      
+    { 
+        return data[std::slice(row * size_x + offset, size_x - offset, 1)]; 
+    }
+
     T GetElement(const size_t x, const size_t y) const { return data[x + y * size_x]; }
     T& GetElement(const size_t x, const size_t y) { return data[x + y * size_x]; }
     T GetElement(const size_t i) const { return data[i]; }
