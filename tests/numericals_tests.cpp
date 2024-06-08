@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <valarray>
-#include "numericals.h"
+#include "MatrixSolver.h"
 #include "vector.h"
-
+#include "MatrixDecomposer.h"
 
 template <typename T> requires std::is_arithmetic_v<T>
 void expect_valarray_equals(std::valarray<T> ar1, std::valarray<T> ar2)
