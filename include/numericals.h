@@ -27,6 +27,8 @@ vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>
 vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
 vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, MatrixFlag flag = NORMAL);
 vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, MatrixFlag flag = NORMAL);
+vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, const vector<real>& b, MatrixFlag flag = NORMAL);
 
 matrix<real> lu_decomposition(matrix<real> a, MatrixFlag flag = NORMAL);
-matrix<real> ldl_decomposition(matrix<real> a, MatrixFlag flag = NORMAL);
+matrix<real> ldlt_decomposition(const matrix<real>& a, MatrixFlag flag = NORMAL);
+matrix<real> ldl_decomposition(const matrix<real>& a, MatrixFlag flag = NORMAL);

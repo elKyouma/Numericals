@@ -197,7 +197,7 @@ vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const 
 
 matrix<real> ldlt_decomposition(const matrix<real>& a, [[maybe_unused]] MatrixFlag flag)
 {
-    if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldlt decomposition");
+    if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldl decomposition");
     
     size_t size = a.GetSizeX();
     matrix<real> result {size, size};
@@ -222,9 +222,6 @@ matrix<real> ldlt_decomposition(const matrix<real>& a, [[maybe_unused]] MatrixFl
         }   
     }
     
-    for(size_t i = 0; i < size; i++)
-        for(size_t j = i + 1; j < size; j++)
-            result.GetElement(j, i) = result.GetElement(i, j);
     return result;
 }
 
@@ -240,14 +237,4 @@ vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, cons
         y[i] = z[i] / ldlt.GetElement(i, i);
     
     return solve_high_trian_matrix_eq(ldlt, y, assume_diagonal_ones);
-}
-
-
-matrix<real> ldl_decomposition(const matrix<real>& a, MatrixFlag flag) 
-{
-    if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldl decomposition");
- 
-    size_t size = a.GetSizeX();
-    for(size_t i = 0; i < size; i++);
-    return a;
 }
