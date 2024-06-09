@@ -4,6 +4,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <valarray>
+#include "vector.h"
 
 template <typename T> requires std::is_arithmetic_v<T>
 class matrix
@@ -45,6 +46,15 @@ public:
         return data[std::slice(row * size_x + offset, size_x - offset, 1)]; 
     }
 
+    matrix<T> Transposed() const
+    {
+        matrix<T> result{GetSizeY(), GetSizeX()};
+        for(size_t i = 0; i < GetSizeX(); i++)
+            result.GetRowSlice(i) = GetColumn(i);
+        
+        return result;
+    }
+
     T GetElement(const size_t x, const size_t y) const { return data[x + y * size_x]; }
     T& GetElement(const size_t x, const size_t y) { return data[x + y * size_x]; }
     T GetElement(const size_t i) const { return data[i]; }
@@ -59,17 +69,33 @@ public:
     auto begin() const { return data.begin(); }
     auto end() const { return data.end(); }
     
+    vector<T> operator*(const vector<T>& other)
+    {
+        if(GetSizeX() != other.GetSize()) [[unlikely]] std::runtime_error("Wrong matrices dimensions on multiplication operator");
+        vector<T> result = vector<T>(GetSizeY());
+        for(size_t i = 0; i < GetSizeY(); i++)
+        {   
+            result[i] = 0.0;
+            for(size_t j = 0; j < GetSizeX(); j++)
+                result[i] += GetElement(j, i) * other[j];
+        }
+
+        return result;
+    }
+
     matrix<T> operator*(const matrix<T>& other)
     {
         if(GetSizeX() != other.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrices dimensions on multiplication operator");
         
         matrix<T> result{other.GetSizeX(), GetSizeY()};
 
-        for(size_t i = 0; i < GetSizeX(); i++)
-            for(size_t x = 0; x < GetSizeX(); x++)
-                for(size_t y = 0; y < GetSizeY(); y++)
-                     result.GetElement(x, y) += GetElement(i, y) * other.GetElement(x, i);
-        
+        for(size_t y = 0; y < GetSizeY(); y++)
+            for(size_t x = 0; x < other.GetSizeX(); x++)
+            {    
+                result.GetElement(x, y) = 0.0;
+                for(size_t i = 0; i < GetSizeX(); i++)
+                    result.GetElement(x, y) += GetElement(i, y) * other.GetElement(x, i);
+            }
         return result;
     }
 

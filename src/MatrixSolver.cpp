@@ -63,6 +63,14 @@ vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>
     return x;
 }
 
+vector<real> solve_overdetermined_matrix(const matrix<real>& a, const vector<real>& b, 
+                                         std::function<vector<real>(matrix<real>, vector<real>, PivotingStrategy&&)> algorithm, PivotingStrategy&& strategy)
+{
+   matrix<real> A = a.Transposed() * a; 
+   vector<real> realB = a.Transposed() * b;
+   return algorithm(A, realB, std::move(strategy)); 
+}
+
 vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, PivotingStrategy&& strategy)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");
@@ -121,7 +129,7 @@ vector<real> solve_tridiagonal_matrix_eq( std::array<vector<real>, 3> a, vector<
     vector<real>& d = a[1];
     vector<real>& u = a[2];
 
-    for(size_t i = 0; i < size; i++)
+    for(size_t i = 0; i < size - 1; i++)
     {    
         l[i] /= d[i];
         d[i + 1] -= l[i] * u[i];
@@ -136,7 +144,7 @@ vector<real> solve_tridiagonal_matrix_eq( std::array<vector<real>, 3> a, vector<
     x[size - 1] = y[size - 1] / d[size - 1];
     for(int i = size - 2; i >= 0; i--)
         x[i] = (y[i] - u[i] * x[i + 1]) / d[i];
-    
+
     return x;
 }
 

@@ -161,6 +161,20 @@ TEST(MatrixEquationSolver, LLT_Decomposition)
     expect_matrix_equals(A, expected_lu); 
 }
 
+TEST(MatrixEquationSolver, solveOverdeterminedMatrix)
+{
+    matrix<real> A{3, 4, {  1.0, 0.0, 0.0,
+                            0.0, 2.0, 0.0,
+                            2.0, 0.0, 1.0,
+                            0.0, 0.0, 1.0}};
+    vector<real> b{1.0, 2.0, 3.0, 0.0}; 
+    //vector<real> b{72.0, 0.0, 288.0};
+    //vector<real> expected{4162.0, -1136.0, 184.0};
+    auto x = solve_overdetermined_matrix(A, b, solve_matrix_eq_jordan);
+    std::cout <<x;
+    //expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
+}
+
 TEST(MatrixEquationSolver, solveLLT_Matrix)
 {
     matrix<real> A{3, 3, {  4.0, 12.0, -16.0,

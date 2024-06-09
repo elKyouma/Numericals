@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <initializer_list>
 #include <iostream>
 #include <valarray>
@@ -9,6 +10,10 @@ template <typename T> requires std::is_arithmetic_v<T>
 class vector{
 public:
     vector(size_t size) : data(size){};
+    vector(const vector& toCopy)
+    {
+        data = toCopy;
+    }
     vector(std::initializer_list<T> list) : data(list){}
     size_t GetSize() const {return data.size();}
 
@@ -26,6 +31,6 @@ std::ostream& operator<< (std::ostream& stream, vector<F> toPrint)
 {
     for(size_t i = 0; i < toPrint.GetSize(); i++)
         stream << toPrint[i] << "\t";
-    
+    stream << std::endl; 
     return stream;
 }

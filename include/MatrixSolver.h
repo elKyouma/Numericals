@@ -12,6 +12,8 @@ real solve_polynomial_horner(std::span<real>,const real);
 
 vector<real> solve_high_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes = false);
 vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes = false);
+vector<real> solve_overdetermined_matrix(const matrix<real>& a, const vector<real>& b, std::function<vector<real>(matrix<real>, vector<real>, PivotingStrategy&&)> algorithm, PivotingStrategy&& strategy = NoPivotingStragegy());
+
 vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, PivotingStrategy&& strategy = NoPivotingStragegy());
 vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b,  PivotingStrategy&& strategy = NoPivotingStragegy());
 vector<real> solve_tridiagonal_matrix_eq( std::array<vector<real>, 3> a, vector<real> b);
