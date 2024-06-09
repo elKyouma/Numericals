@@ -184,6 +184,18 @@ TEST(MatrixEquationSolver, SolveLDLT_Matrix)
     expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
 }
 
+TEST(MatrixEquationSolver, SolveTridiagonalMatrix)
+{
+    vector<real> a1 { 1.0, 6.0, 2.0 };
+    vector<real> a2 { 1.0, 4.0, 6.0, 2.0 };
+    vector<real> a3 { 2.0, 4.0, 8.0 };
+    vector<real> b {14.0, 0.0, 14.0, 14.0};
+
+    vector<real> expected{28.0, -7.0, 0.0, 7.0};
+    auto result = solve_tridiagonal_matrix_eq({a1,a2,a3}, b);
+    expect_valarray_equals((std::valarray<real>)result, (std::valarray<real>)expected); 
+}
+
 TEST(MatrixEquationSolver, SolveLDL_Matrix)
 {
 }

@@ -110,6 +110,36 @@ vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b, PivotingStr
     return b;
 }
 
+vector<real> solve_tridiagonal_matrix_eq( std::array<vector<real>, 3> a, vector<real> b)
+{
+    if(a[0].GetSize() != b.GetSize() - 1 || a[1].GetSize() != b.GetSize() || a[2].GetSize() != b.GetSize() - 1) [[unlikely]]
+        std::runtime_error("Wrong matrix-vector sizes in tridiagonal solver");
+    
+    //lu on tridiagonal matrix
+    size_t size = b.GetSize();
+    vector<real>& l = a[0];
+    vector<real>& d = a[1];
+    vector<real>& u = a[2];
+
+    for(size_t i = 0; i < size; i++)
+    {    
+        l[i] /= d[i];
+        d[i + 1] -= l[i] * u[i];
+    }
+
+    vector<real> y = vector<real>(size);
+    y[0] = b[0];
+    for(size_t i = 1; i < size; i++)
+        y[i] = b[i] - l[i - 1] * y[i - 1]; 
+
+    vector<real> x = vector<real>(size);
+    x[size - 1] = y[size - 1] / d[size - 1];
+    for(int i = size - 2; i >= 0; i--)
+        x[i] = (y[i] - u[i] * x[i + 1]) / d[i];
+    
+    return x;
+}
+
 vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, PivotingStrategy&& strategy)
 {
     constexpr bool assume_diagonal_ones = true;
