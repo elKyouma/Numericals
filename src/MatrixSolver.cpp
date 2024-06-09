@@ -163,15 +163,8 @@ vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, cons
 }
 vector<real> solve_matrix_eq_with_llt_decomposition(const matrix<real>& a, const vector<real>& b)
 {
-    constexpr bool assume_diagonal_ones = true;
     matrix<real> llt = llt_decomposition(a);
     vector<real> z = solve_low_trian_matrix_eq(llt, b);
-    size_t size = z.GetSize();
-    vector<real> y = vector<real>(size);
-    
-    for(size_t i = 0; i < size; i++)
-        y[i] = z[i] / llt.GetElement(i, i);
-    
-    return solve_high_trian_matrix_eq(llt, y);
+    return solve_high_trian_matrix_eq(llt, z );
 }
 }

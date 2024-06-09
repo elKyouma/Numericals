@@ -161,6 +161,19 @@ TEST(MatrixEquationSolver, LLT_Decomposition)
     expect_matrix_equals(A, expected_lu); 
 }
 
+TEST(MatrixEquationSolver, solveLLT_Matrix)
+{
+    matrix<real> A{3, 3, {  4.0, 12.0, -16.0,
+                            12.0, 37.0, -43.0,
+                            -16.0, -43.0, 98.0 }};
+    
+    vector<real> b{72.0, 0.0, 288.0};
+    vector<real> expected{4162.0, -1136.0, 184.0};
+    auto x = solve_matrix_eq_with_llt_decomposition(A,b);
+
+    expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
+}
+
 TEST(MatrixEquationSolver, SolveLU_Matrix)
 {
     matrix<real> A{3, 3, {  1.0, 0.0, 3.0,
