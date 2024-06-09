@@ -148,10 +148,10 @@ vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const 
     return solve_high_trian_matrix_eq(lu, std::move(y));
 }
 
-vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, const vector<real>& b, PivotingStrategy&& strategy)
+vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, const vector<real>& b)
 {
     constexpr bool assume_diagonal_ones = true;
-    matrix<real> ldlt = ldlt_decomposition(a, std::move(strategy));
+    matrix<real> ldlt = ldlt_decomposition(a);
     vector<real> z = solve_low_trian_matrix_eq(ldlt, b, assume_diagonal_ones);
     size_t size = z.GetSize();
     vector<real> y = vector<real>(size);
@@ -160,5 +160,18 @@ vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, cons
         y[i] = z[i] / ldlt.GetElement(i, i);
     
     return solve_high_trian_matrix_eq(ldlt, y, assume_diagonal_ones);
+}
+vector<real> solve_matrix_eq_with_llt_decomposition(const matrix<real>& a, const vector<real>& b)
+{
+    constexpr bool assume_diagonal_ones = true;
+    matrix<real> llt = llt_decomposition(a);
+    vector<real> z = solve_low_trian_matrix_eq(llt, b);
+    size_t size = z.GetSize();
+    vector<real> y = vector<real>(size);
+    
+    for(size_t i = 0; i < size; i++)
+        y[i] = z[i] / llt.GetElement(i, i);
+    
+    return solve_high_trian_matrix_eq(llt, y);
 }
 }

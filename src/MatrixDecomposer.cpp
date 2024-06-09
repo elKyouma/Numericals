@@ -4,36 +4,34 @@
 namespace numericals
 {
 
-matrix<real> ldl_decomposition(const matrix<real>& a, PivotingStrategy&& strategy) 
+matrix<real> llt_decomposition(const matrix<real>& a) 
 {
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldl decomposition");
  
     size_t size = a.GetSizeX();
     matrix<real> result{size, size};
-    for(size_t i = 0; i < size; i++)
-    {    
-        auto& d = result.GetElement(i, i); 
-        d = a.GetElement(i, i);
-        for(size_t k = 0; k < i - 1; k++)
-            d -= pow(result.GetElement(k, i), 2);
-        d = sqrt(d);
-        
-        for(size_t j = 0; j < i - 1; j++)
-        {    
-            result.GetElement(j , i) = a.GetElement(j, i);
-            for(size_t k = 0; k < i - 1; k++)
-                result.GetElement(j, i) -= result.GetElement(j, k) * result.GetElement(i, k);
+    for(int i = 0; i < (int)size; i++)
+    {
+        for(int j = 0; j < i; j++)
+        {
+            result.GetElement(j, i) = a.GetElement(j, i);
+            for(int k = 0; k < j; k++)
+               result.GetElement(j, i) -= result.GetElement(k, j) * result.GetElement(k, i);
+            result.GetElement(j, i) /= result.GetElement(j, j);
         }
-    }
+        result.GetElement(i, i) = a.GetElement(i, i);
+        for(int k = 0; k < i; k++)
+            result.GetElement(i, i) -= pow(result.GetElement(k, i), 2);
+        result.GetElement(i, i) = sqrt(result.GetElement(i, i));
+    } 
 
     for(size_t i = 0; i < size; i++)
         for(size_t j = i + 1; j < size; j++)
             result.GetElement(j, i) = result.GetElement(i, j);
-
     return result;
 }
 
-matrix<real> ldlt_decomposition(const matrix<real>& a, PivotingStrategy&& strategy)
+matrix<real> ldlt_decomposition(const matrix<real>& a)
 {
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldlt decomposition");
     
@@ -59,10 +57,12 @@ matrix<real> ldlt_decomposition(const matrix<real>& a, PivotingStrategy&& strate
                 result.GetElement(i, i) -= result.GetElement(i, k) * result.GetElement(k, i);       
         }   
     }
-    
+ 
     for(size_t i = 0; i < size; i++)
         for(size_t j = i + 1; j < size; j++)
             result.GetElement(j, i) = result.GetElement(i, j);
+
+   
     return result;
 }
 
