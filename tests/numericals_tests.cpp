@@ -21,30 +21,6 @@ void expect_matrix_equals(matrix<T> a1, matrix<T> a2)
         EXPECT_NEAR(a1.GetElement(i), a2.GetElement(i), 10e-7);
 }
 
-TEST(Polynomials, Solve)
-{
-    //x^2 + 2x + 1
-    real a[3];
-    a[0] = 1;
-    a[1] = 2;
-    a[2] = 1;
-    
-    auto result = solve_polynomial(a, 3.0); 
-    ASSERT_FLOAT_EQ(result, 16.0);
-}
-
-TEST(Polynomials, SolveHorner)
-{
-    //x^2 + 2x + 1
-    real a[3];
-    a[0] = 1;
-    a[1] = 2;
-    a[2] = 1;
-    
-    auto result = solve_polynomial_horner(a, 3.0); 
-    ASSERT_FLOAT_EQ(result, 16.0);
-}
-
 TEST(MatrixEquationSolver, SolveHighTriangular)
 {
     matrix<real> A{3, 3, {1.0, 2.0, 3.0, 0.0, 5.0, 6.0, 0.0, 0.0, 9.0}};

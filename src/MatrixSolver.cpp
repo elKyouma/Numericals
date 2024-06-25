@@ -10,23 +10,6 @@
 
 namespace numericals{
 
-real solve_polynomial(std::span<real> coefficients, const real x)
-{
-    real result{0.0};
-    for (size_t i = 0; i < coefficients.size(); i++)
-        result += pow(x, i) * coefficients[i];
-    
-    return result;
-}
-
-real solve_polynomial_horner(std::span<real> coefficients, const real x)
-{
-    real result{0.0};
-    for(const auto& a : std::ranges::views::reverse(coefficients))
-        result = result * x + a;
-    return result;
-}
-
 vector<real> solve_high_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes)
 {
     if(a.GetSizeY() != a.GetSizeY() || a.GetSizeX() != b.GetSize()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in solver");

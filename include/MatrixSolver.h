@@ -3,13 +3,10 @@
 #include "matrix.h"
 #include "vector.h"
 #include "PivotingStrategy.h"
-#include <span>
+#include <functional>
 
 namespace numericals {
 //w = x^n-1*a_n + x^n-2*a_n-1 + a_0 
-real solve_polynomial(std::span<real>,const real);
-real solve_polynomial_horner(std::span<real>,const real);
-
 vector<real> solve_high_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes = false);
 vector<real> solve_low_trian_matrix_eq(const matrix<real>& a, const vector<real>& b, bool assumeDiagonalOnes = false);
 vector<real> solve_overdetermined_matrix(const matrix<real>& a, const vector<real>& b, std::function<vector<real>(matrix<real>, vector<real>, PivotingStrategy&&)> algorithm, PivotingStrategy&& strategy = NoPivotingStragegy());
