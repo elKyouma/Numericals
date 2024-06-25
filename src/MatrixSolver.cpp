@@ -148,6 +148,18 @@ vector<real> solve_tridiagonal_matrix_eq( std::array<vector<real>, 3> a, vector<
     return x;
 }
 
+vector<real> solve_matrix_eq_with_qr_decomposition(const matrix<real>& a, const vector<real>& b)
+{
+    auto [Q, R] = qr_decomposition(a);
+    size_t size = b.GetSize();
+    vector<real> y = vector<real>(size);
+    for(size_t i = 0; i < size; i++)
+        y[i] = Q.GetElement(i, i) / (vector<real>(Q.GetRow(i)) * vector<real>(Q.GetColumn(i)));
+    
+    y =  y * b; 
+    return solve_high_trian_matrix_eq(R, std::move(y));
+}
+
 vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, PivotingStrategy&& strategy)
 {
     constexpr bool assume_diagonal_ones = true;

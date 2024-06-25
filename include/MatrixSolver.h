@@ -17,6 +17,7 @@ vector<real> solve_overdetermined_matrix(const matrix<real>& a, const vector<rea
 vector<real> solve_matrix_eq_gauss( matrix<real> a, vector<real> b, PivotingStrategy&& strategy = NoPivotingStragegy());
 vector<real> solve_matrix_eq_jordan( matrix<real> a, vector<real> b,  PivotingStrategy&& strategy = NoPivotingStragegy());
 vector<real> solve_tridiagonal_matrix_eq( std::array<vector<real>, 3> a, vector<real> b);
+vector<real> solve_matrix_eq_with_qr_decomposition(const matrix<real>& a, const vector<real>& b);
 vector<real> solve_matrix_eq_with_lu_decomposition(const matrix<real>& a, const vector<real>& b, PivotingStrategy&& strategy = NoPivotingStragegy());
 vector<real> solve_matrix_eq_with_ldlt_decomposition(const matrix<real>& a, const vector<real>& b);
 vector<real> solve_matrix_eq_with_llt_decomposition(const matrix<real>& a, const vector<real>& b);

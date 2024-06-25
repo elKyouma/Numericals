@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <initializer_list>
 #include <iostream>
 #include <valarray>
@@ -10,12 +9,17 @@ template <typename T> requires std::is_arithmetic_v<T>
 class vector{
 public:
     vector(size_t size) : data(size){};
-    vector(const vector& toCopy)
-    {
-        data = toCopy;
-    }
     vector(std::initializer_list<T> list) : data(list){}
+    vector(std::valarray<T> array) : data(array){}
     size_t GetSize() const {return data.size();}
+
+    T operator*(const vector<T>& other)
+    {
+        T result = 0.0;
+        for(size_t i = 0; i < data.size(); i++)
+            result += data[i] * other[i];
+        return result;
+    }
 
     T& operator[](const size_t index) { return data[index]; }
     T operator[](const size_t index) const { return data[index]; }

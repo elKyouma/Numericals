@@ -161,6 +161,27 @@ TEST(MatrixEquationSolver, LLT_Decomposition)
     expect_matrix_equals(A, expected_lu); 
 }
 
+TEST(MatrixEquationSolver, QR_Decomposition)
+{
+    matrix<real> A{3, 4, {  1.0, -1.0, 1.0,
+                            1.0, 0.0, 0.0,
+                            1.0, 1.0, 1.0,
+                            1.0, 2.0, 4.0}};
+    
+    matrix<real> expected_q{3, 3, { 0.5, real(-3.0/sqrt(5.0)), 0.5,
+                                    0.5, real(-1.0/sqrt(5.0)), -0.5,
+                                    0.5, real(1.0/sqrt(5.0)), -0.5,
+                                    0.5, real(3.0/sqrt(5.0)), 0.5}};
+ 
+    matrix<real> expected_r{3, 3, {2.0, 1.0, 3.0,
+                                    0.0, real(sqrt(5.0)), real(sqrt(5.0)),
+                                    0.0, 0.0, 2.0 }};
+    auto[Q, R] = qr_decomposition(A);
+
+    expect_matrix_equals(Q, expected_q); 
+    expect_matrix_equals(R, expected_r); 
+}
+
 TEST(MatrixEquationSolver, solveOverdeterminedMatrix)
 {
     matrix<real> A{3, 4, {  1.0, 0.0, 0.0,
@@ -168,11 +189,8 @@ TEST(MatrixEquationSolver, solveOverdeterminedMatrix)
                             2.0, 0.0, 1.0,
                             0.0, 0.0, 1.0}};
     vector<real> b{1.0, 2.0, 3.0, 0.0}; 
-    //vector<real> b{72.0, 0.0, 288.0};
-    //vector<real> expected{4162.0, -1136.0, 184.0};
     auto x = solve_overdetermined_matrix(A, b, solve_matrix_eq_jordan);
-    std::cout <<x;
-    //expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
+    std::cout << x;
 }
 
 TEST(MatrixEquationSolver, solveLLT_Matrix)
@@ -197,6 +215,18 @@ TEST(MatrixEquationSolver, SolveLU_Matrix)
     vector<real> expected{4.0, 1.0, -1.0};
     vector<real> x = solve_matrix_eq_with_lu_decomposition(A, b);
 
+    expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
+}
+
+TEST(MatrixEquationSolver, SolveQR_Matrix)
+{
+    matrix<real> A{3, 4, {  1.0, 0.0, 0.0,
+                            0.0, 2.0, 0.0,
+                            1.0, 0.0, 1.0,
+                            0.0, 1.0, 1.0}};
+    vector<real> b{3.0, 2.0, 4.0, 2.0}; 
+    vector<real> expected{3.0, 1.0, 1.0}; 
+    auto x = solve_matrix_eq_with_qr_decomposition(A, b);
     expect_valarray_equals((std::valarray<real>)x, (std::valarray<real>)expected); 
 }
 

@@ -4,6 +4,29 @@
 namespace numericals
 {
 
+std::pair<matrix<real>, matrix<real>> qr_decomposition(const matrix<real>& a)
+{
+    matrix<real> q{a.GetSizeX(), a.GetSizeY()};
+    matrix<real> r{a.GetSizeX(), a.GetSizeX()};
+ 
+    for(size_t k = 0; k < a.GetSizeX(); k++)
+    {    
+        q.GetColumnSlice(k) = a.GetColumn(k);
+        for(size_t i = 0; i < k; i++)
+            q.GetColumnSlice(k) -= q.GetColumn(i) * r.GetElement(k, i);
+
+
+        r.GetElement(k, k) = 1.0;
+        for(size_t i = 0; i < k; i++)
+        {
+            std::cout << r << '\n' << q << '\n';
+            double d = vector<real>(q.GetColumn(k)) * vector<real>(q.GetColumn(k));
+            r.GetElement(k , i) = vector<real>(q.GetColumn(i)) * vector<real>(a.GetColumn(k))/d;
+        }        
+    }
+    return { q, r };
+}
+
 matrix<real> llt_decomposition(const matrix<real>& a) 
 {
     if(a.GetSizeY() != a.GetSizeY()) [[unlikely]] std::runtime_error("Wrong matrix-vector sizes in ldl decomposition");
