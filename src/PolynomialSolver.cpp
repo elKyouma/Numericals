@@ -18,3 +18,17 @@ real solve_polynomial_horner(std::span<real> coefficients, const real x)
         result = result * x + a;
     return result;
 }
+
+real find_function_zero_with_bisection(std::function<real(real)> func, real a, real b)
+{
+    if(a - b < 0)
+        return (a + b)/2;
+    else
+    {
+        auto x = (a + b)/2;
+        if(x * a > 0)
+            return find_function_zero_with_bisection(func, x, b);
+        else
+            return find_function_zero_with_bisection(func, a, x);
+    }
+}
