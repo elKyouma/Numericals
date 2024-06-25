@@ -21,7 +21,7 @@ real solve_polynomial_horner(std::span<real> coefficients, const real x)
 
 real find_function_zero_with_bisection(std::function<real(real)> func, real a, real b)
 {
-    if(a - b < 0)
+    if(fabs(func(a) - func(b)) < 0.00001)
         return (a + b)/2;
     else
     {
@@ -31,4 +31,11 @@ real find_function_zero_with_bisection(std::function<real(real)> func, real a, r
         else
             return find_function_zero_with_bisection(func, a, x);
     }
+}
+
+real find_function_zero_with_falsi(std::function<real(real)> func, real a, real b)
+{
+    if(fabs(func(a)) < 0.00001)
+        return a;
+    return find_function_zero_with_falsi(func, a - func(a) / (func(b) - func(a)) * (b - a), b);
 }

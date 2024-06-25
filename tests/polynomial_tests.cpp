@@ -29,5 +29,6 @@ TEST(Polynomials, SolveHorner)
 TEST(Functions, FindZero)
 {
     auto func = [](double x){return exp(x) - 1;};
-    EXPECT_FLOAT_EQ(0.f, find_function_zero_with_bisection( func, -1, 1));
+    EXPECT_NEAR(0.f, find_function_zero_with_bisection( func, -8, 1.2), 0.0001);
+    EXPECT_NEAR(0.f, find_function_zero_with_falsi( func, -8, 1.2), 0.0001);
 }
