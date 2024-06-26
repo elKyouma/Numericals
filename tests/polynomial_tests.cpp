@@ -1,6 +1,7 @@
 #include "PolynomialSolver.h"
 #include <cmath>
 #include <gtest/gtest.h>
+#include <numeric>
 
 TEST(Polynomials, Solve)
 {
@@ -41,3 +42,36 @@ TEST(Functions, FindZero)
     EXPECT_NEAR(5.f, find_function_zero_with_newton_raphson( func2, -1, 9.2 ), abs_error);
 }
 
+TEST(Approximation, LeastSquareApprox_Simple)
+{
+    std::vector<real> x (5);
+    std::iota(x.begin(), x.end(), -2);
+    std::vector<real> y {4, 1, 0, 1, 4};
+    vector<real> expected{0, 0, 1, 0};
+
+    double abs_error = 0.0001;
+    
+    auto polynomial = get_polynomial_approximation(x, y, 3);
+    EXPECT_NEAR(polynomial[0], expected[0], abs_error);
+    EXPECT_NEAR(polynomial[1], expected[1], abs_error);
+    EXPECT_NEAR(polynomial[2], expected[2], abs_error);
+    EXPECT_NEAR(polynomial[3], expected[3], abs_error);
+
+}
+
+TEST(Approximation, LeastSquareApprox_Advanced)
+{
+    std::vector<real> x (5);
+    std::iota(x.begin(), x.end(), -3);
+    std::vector<real> y {4, 1, 0, 1, 4};
+    vector<real> expected{1, 2, 1, 0};
+
+    double abs_error = 0.0001;
+    
+    auto polynomial = get_polynomial_approximation(x, y, 3);
+    EXPECT_NEAR(polynomial[0], expected[0], abs_error);
+    EXPECT_NEAR(polynomial[1], expected[1], abs_error);
+    EXPECT_NEAR(polynomial[2], expected[2], abs_error);
+    EXPECT_NEAR(polynomial[3], expected[3], abs_error);
+
+}

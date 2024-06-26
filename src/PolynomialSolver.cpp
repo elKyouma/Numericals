@@ -1,7 +1,9 @@
 #include "PolynomialSolver.h"
 #include <cmath>
-#include <iostream>
 #include <ranges>
+#include "matrix.h"
+#include "vector.h"
+#include "MatrixSolver.h"
 
 real find_derivative(MFunc func, real x, real delta)
 {
@@ -65,4 +67,19 @@ real find_function_zero_with_newton_raphson(MFunc func, real a, real b)
         x -= func(x)/find_derivative(func, x, 1e6);
 
     return x;
+}
+
+
+vector<real> get_polynomial_approximation(std::span<real> input, std::span<real> output, size_t n)
+{
+    size_t m = input.size();
+    vector<real> polynomial = vector<real>(m);
+    matrix<real> d = matrix<real>{n + 1, m};
+    for(size_t y = 0; y < m; y++)
+        for(size_t x = 0; x <= n; x++)
+            d.GetElement(x, y) = pow(input[y], x);
+    
+    polynomial = numericals::solve_matrix_eq_jordan(d.Transposed() * d, d.Transposed() * vector<real>(output));
+
+    return polynomial;
 }

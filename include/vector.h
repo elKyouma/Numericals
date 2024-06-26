@@ -1,16 +1,24 @@
 #pragma once
 
+#include <algorithm>
 #include <initializer_list>
 #include <iostream>
+#include <span>
 #include <valarray>
 #include <iostream>
 
 template <typename T> requires std::is_arithmetic_v<T>
 class vector{
 public:
-    vector(size_t size) : data(size){};
+    vector(const size_t size) : data(size){};
     vector(std::initializer_list<T> list) : data(list){}
     vector(std::valarray<T> array) : data(array){}
+    vector(std::span<T> array)
+    {
+        data.resize(array.size());
+        std::copy(array.begin(), array.end(), std::begin(data));
+    }
+    
     size_t GetSize() const {return data.size();}
 
     T operator*(const vector<T>& other)
