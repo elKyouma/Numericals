@@ -28,12 +28,16 @@ TEST(Polynomials, SolveHorner)
 
 TEST(Functions, FindZero)
 {
+    double abs_error = 0.0001;
+
     auto func1 = [](double x){return exp(x) - 1;};
-    EXPECT_NEAR(0.f, find_function_zero_with_bisection( func1, -8, 1.2), 0.0001);
-    EXPECT_NEAR(0.f, find_function_zero_with_falsi( func1, -8, 1.2), 0.0001);
+    EXPECT_NEAR(0.f, find_function_zero_with_bisection( func1, -8, 1.2), abs_error);
+    EXPECT_NEAR(0.f, find_function_zero_with_falsi( func1, -8, 1.2), abs_error);
     
     auto func2 = [](double x){return (x - 5.)*(x + 30.);};
-    EXPECT_NEAR(5.f, find_function_zero_with_bisection( func2, -1, 9.2), 0.0001);
-    EXPECT_NEAR(5.f, find_function_zero_with_falsi( func2, -1, 9.2), 0.0001);
-    EXPECT_NEAR(5.f, find_function_zero_with_secant( func2, -1, 9.2), 0.0001);
+    EXPECT_NEAR(5.f, find_function_zero_with_bisection( func2, -1, 9.2), abs_error);
+    EXPECT_NEAR(5.f, find_function_zero_with_falsi( func2, -1, 9.2), abs_error);
+    EXPECT_NEAR(5.f, find_function_zero_with_secant( func2, -1, 9.2), abs_error);
+    EXPECT_NEAR(5.f, find_function_zero_with_newton_raphson( func2, -1, 9.2 ), abs_error);
 }
+
