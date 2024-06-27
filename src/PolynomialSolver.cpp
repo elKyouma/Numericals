@@ -27,6 +27,15 @@ real solve_polynomial_horner(std::span<real> coefficients, const real x)
     return result;
 }
 
+std::vector<real> get_chebyshev_polynomial_zeros(size_t n, real a, real b)
+{
+    std::vector<real> result(n);
+   
+    for(size_t i = 0; i < n; i++)
+        result[i] = ((a - b) * cos((2*i + 1.0) / (2*(n-1) + 2.0) * M_PI) + (a + b))*0.5f;
+    return result;
+}
+
 real find_function_zero_with_bisection(MFunc func, real a, real b)
 {
     if(fabs(a - b) < 0.00001)

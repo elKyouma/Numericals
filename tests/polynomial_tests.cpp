@@ -27,6 +27,18 @@ TEST(Polynomials, SolveHorner)
     ASSERT_FLOAT_EQ(result, 16.0);
 }
 
+TEST(Polynomial, GetCzebyszewZeros)
+{
+    vector<real> expected{-4.82963, -3.53553, -1.2941, 1.2941, 3.53553, 4.82963};
+    auto vec1 = get_chebyshev_polynomial_zeros(6, -5, 5);
+
+    double abs_error = 0.00001;
+    EXPECT_NEAR(expected[0], vec1[0], abs_error);
+    EXPECT_NEAR(expected[1], vec1[1], abs_error);
+    EXPECT_NEAR(expected[2], vec1[2], abs_error);
+    EXPECT_NEAR(expected[3], vec1[3], abs_error);
+}
+
 TEST(Functions, FindZero)
 {
     double abs_error = 0.0001;
@@ -92,3 +104,4 @@ TEST(Interpolation, LagrangeInterpolation)
     EXPECT_NEAR(func(0), 1.0, abs_error);
     EXPECT_NEAR(func(1), 4.0, abs_error);
 }
+
