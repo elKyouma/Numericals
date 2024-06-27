@@ -70,16 +70,39 @@ real find_function_zero_with_newton_raphson(MFunc func, real a, real b)
 }
 
 
-vector<real> get_polynomial_approximation(std::span<real> input, std::span<real> output, size_t n)
+vector<real> get_polynomial_approximation(std::span<real> input, std::span<real> output, size_t n, std::vector<std::function<real(real)>> base)
 {
     size_t m = input.size();
-    vector<real> polynomial = vector<real>(m);
-    matrix<real> d = matrix<real>{n + 1, m};
+    vector<real> polynomial(m);
+    matrix<real> d(n + 1, m);
     for(size_t y = 0; y < m; y++)
         for(size_t x = 0; x <= n; x++)
-            d.GetElement(x, y) = pow(input[y], x);
-    
+            if(base.empty())
+                d.GetElement(x, y) = pow(input[y], x);
+            else
+                d.GetElement(x, y) = base[x](input[y]);
+
     polynomial = numericals::solve_matrix_eq_jordan(d.Transposed() * d, d.Transposed() * vector<real>(output));
 
     return polynomial;
+}
+
+MFunc get_lagrange_interpolation(std::span<real> input, std::span<real> output)
+{
+    size_t m = input.size();
+
+    return [m, input, output](real x)
+    {
+        real sum = 0.0;
+        for(size_t i = 0; i < m; i++)
+        {
+            real mult = 1.0;
+            for(size_t j = 0; j < m; j++)
+                if(i != j)
+                    mult *= (x - input[j])/(input[i] - input[j]);
+            sum += mult * output[i];
+        }
+        
+        return sum;
+    };
 }

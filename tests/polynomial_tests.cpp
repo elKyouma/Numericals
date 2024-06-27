@@ -69,9 +69,26 @@ TEST(Approximation, LeastSquareApprox_Advanced)
     double abs_error = 0.0001;
     
     auto polynomial = get_polynomial_approximation(x, y, 3);
+    auto polynomial2 = get_polynomial_approximation(x, y, 3);
     EXPECT_NEAR(polynomial[0], expected[0], abs_error);
     EXPECT_NEAR(polynomial[1], expected[1], abs_error);
     EXPECT_NEAR(polynomial[2], expected[2], abs_error);
     EXPECT_NEAR(polynomial[3], expected[3], abs_error);
 
+}
+
+TEST(Interpolation, LagrangeInterpolation)
+{
+    std::vector<real> x (5);
+    std::iota(x.begin(), x.end(), -3);
+    std::vector<real> y {4, 1, 0, 1, 4};
+    double abs_error = 0.0001;
+    
+    auto func = get_lagrange_interpolation(x, y);
+
+    EXPECT_NEAR(func(-3), 4.0, abs_error);
+    EXPECT_NEAR(func(-2), 1.0, abs_error);
+    EXPECT_NEAR(func(-1), 0.0, abs_error);
+    EXPECT_NEAR(func(0), 1.0, abs_error);
+    EXPECT_NEAR(func(1), 4.0, abs_error);
 }

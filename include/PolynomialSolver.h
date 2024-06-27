@@ -2,6 +2,7 @@
 #include "numerical_types.h"
 #include <functional>
 #include <span>
+#include <vector>
 #include "vector.h"
 
 using MFunc = std::function<real(real)>;
@@ -16,4 +17,5 @@ real find_function_zero_with_falsi(MFunc, real, real);
 real find_function_zero_with_secant(MFunc, real, real);
 real find_function_zero_with_newton_raphson(MFunc, real, real);
 
-vector<real> get_polynomial_approximation(std::span<real> x, std::span<real> y, size_t n);
+vector<real> get_polynomial_approximation(std::span<real> x, std::span<real> y, size_t n, std::vector<std::function<real(real)>> base = {});
+MFunc get_lagrange_interpolation(std::span<real> x, std::span<real> y);
