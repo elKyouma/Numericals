@@ -1,6 +1,7 @@
 #include "PolynomialSolver.h"
 #include <cmath>
 #include <ranges>
+#include <utility>
 #include "matrix.h"
 #include "vector.h"
 #include "MatrixSolver.h"
@@ -112,6 +113,40 @@ MFunc get_lagrange_interpolation(std::span<real> input, std::span<real> output)
             sum += mult * output[i];
         }
         
+        return sum;
+    };
+}
+
+MFunc get_newton_interpolation(std::span<real> input, std::span<real> output)
+{
+    std::vector<std::vector<real>> coeff; // [a[], f[], f'[], f''[],...]
+
+    size_t n = input.size();
+    coeff.push_back({});
+    coeff.push_back({});
+    for(size_t i = 0; i < n; i++)
+    {   
+        coeff[0].push_back(input[i]);
+        coeff[1].push_back(output[i]);
+    }
+
+    for(size_t i = 2; i <= n; i++)
+    {   
+        coeff.push_back(std::vector<real>(n - i + 1));
+        for(size_t j = 0; j < n - i + 1; j++)
+            coeff[i][j] = (coeff[i - 1][j + 1] - coeff[i - 1][j]) / (coeff[0][i - 1 + j] - coeff[0][j]);
+    }
+    return [coeff = std::move(coeff), n](real x)
+    {
+        real sum = 0.0;
+        for(size_t i = 0; i < n; i++)
+        {
+            real mul = coeff[i + 1][0];
+            for(size_t j = 0; j < i; j++)
+                mul *= (x - coeff[0][j]);
+           
+            sum += mul;
+        }
         return sum;
     };
 }

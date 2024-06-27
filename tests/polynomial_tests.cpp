@@ -105,3 +105,19 @@ TEST(Interpolation, LagrangeInterpolation)
     EXPECT_NEAR(func(1), 4.0, abs_error);
 }
 
+TEST(Interpolation, NewtonInterpolation)
+{
+    std::vector<real> x (5);
+    std::iota(x.begin(), x.end(), -3);
+    std::vector<real> y {4, 1, 0, 1, 4};
+    double abs_error = 0.0001;
+    
+    auto func = get_newton_interpolation(x, y);
+
+    EXPECT_NEAR(func(-3), 4.0, abs_error);
+    EXPECT_NEAR(func(-2), 1.0, abs_error);
+    EXPECT_NEAR(func(-1), 0.0, abs_error);
+    EXPECT_NEAR(func(0), 1.0, abs_error);
+    EXPECT_NEAR(func(1), 4.0, abs_error);
+}
+
